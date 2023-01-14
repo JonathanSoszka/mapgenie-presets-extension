@@ -1,11 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Hello Extensions",
-  "description": "Base Level Extension",
+  "name": "Map Genie Presets",
+  "description": "Adds Free Presets to map genie",
   "version": "1.0",
   "action": {
-    "default_popup": "hello.html",
-    "default_icon": "hello_extensions.png"
+    "default_icon": "icon.png"
   },
   "content_scripts":[
     {
