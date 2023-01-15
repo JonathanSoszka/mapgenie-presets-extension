@@ -1,0 +1,15 @@
+{
+    "name": "map-genie-tools",
+    "devDependencies": {
+        "copy": "^0.3.2",
+        "esbuild": "^0.17.0",
+        "tiny-glob": "^0.2.9",
+        "ts-node": "^10.9.1"
+    },
+    "scripts": {
+        "build": "ts-node esbuild"
+    },
+    "dependencies": {
+        "react-dom": "^18.2.0"
+    }
+}
