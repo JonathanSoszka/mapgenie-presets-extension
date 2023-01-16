@@ -8,7 +8,7 @@ import {
 import { Presets, Preset } from "../types";
 import { presetButtons } from "./preset-buttons";
 
-export function presetModule() {
+export function PresetsManager() {
   const presets: Presets = storage.load("presets") || {};
   let activePreset: Preset | undefined = storage.load("active-preset");
   let presetNameInput = bindable<string>();
