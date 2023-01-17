@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Map Genie Presets",
-  "description": "Adds Free Presets to map genie",
+  "name": "Map Genie Tools",
+  "description": "Adds tools for the map genie site",
   "version": "1.0",
   "action": {
     "default_icon": "icon.png"
