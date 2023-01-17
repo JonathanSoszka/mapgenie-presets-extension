@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Map Genie Tools",
+  "description": "Adds tools for the map genie site",
+  "version": "1.0",
+  "action": {
+    "default_icon": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "scripts/content-script.js"
+      ],
+      "matches": [
+        "https://mapgenie.io/*"
+      ]
+    }
+  ]
+}
