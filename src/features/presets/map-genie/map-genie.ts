@@ -1,4 +1,5 @@
-import { Preset } from "../types";
+import { Preset } from "../store/presets-store";
+
 
 export function getActiveSelections() {
     const selectionElements = [...document.querySelectorAll(".category-visible")];

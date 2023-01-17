@@ -1,61 +1,36 @@
-import { storage } from "../../../core/storage/storage";
-import {
-  getActiveSelections,
-  activatePresetSelections,
-} from "../utility/map-genie";
-import { Presets, Preset } from "../types";
+import { getActiveSelections } from "../map-genie/map-genie";
 import { useState } from "react";
-import { recordValues } from "../../../core/utility/record";
-
-function getUserPresets() {
-  return storage.load<Presets>("presets") || {};
-}
-
-function updateUserPresets(presets: Presets) {
-  storage.save("presets", presets);
-}
+import { usePresetsStore } from "../store/presets-store";
+import { recordValues } from "../../common/utility/record";
 
 export function PresetsManager() {
   const [presetName, setPresetName] = useState<string>("");
-  const [presets, setPresets] = useState<Presets>(getUserPresets());
-  const [activePreset, setActivePreset] = useState<Preset | undefined>(
-    storage.load("active-preset")
-  );
+  const {
+    activePreset,
+    presets,
+    setActivePreset,
+    addPreset,
+    updatePreset,
+    deletePreset,
+  } = usePresetsStore();
 
   function savePreset(name = "default") {
     const newPreset = { name, selections: getActiveSelections() };
-    const updatedPresets = {
-      ...presets,
-      [presetName]: newPreset,
-    };
-    setPresets(updatedPresets);
-    updateUserPresets(updatedPresets);
-    setActivePreset(newPreset)
+    addPreset(newPreset);
   }
 
-  function updateActivePreset(preset: Preset | undefined) {
-    setActivePreset(preset);
-    storage.save("active-preset", preset);
-    setPresetName(preset?.name || "");
-
-    if (preset) {
-      storage.save("active-preset", preset);
-      activatePresetSelections(preset);
+  function updateActivePresetSelections() {
+    if (!activePreset) {
+      return;
     }
-    else{
-      storage.remove("active-preset")
-    }
+    updatePreset(activePreset, getActiveSelections());
   }
 
   function deleteActivePreset() {
     if (!activePreset) {
       return;
     }
-    const updatedPresets = { ...presets };
-    delete updatedPresets[activePreset.name];
-    setPresets(updatedPresets);
-    updateUserPresets(updatedPresets);
-    updateActivePreset(undefined);
+    deletePreset(activePreset);
   }
 
   return (
@@ -70,28 +45,44 @@ export function PresetsManager() {
         />
         <button onClick={() => savePreset(presetName)}>Save Selections</button>
       </div>
-      <div>
-        <div>Saved Presets:</div>
+      {recordValues(presets).length > 0 && (
         <div>
-          {recordValues(presets).map((preset) => (
+          <div>Saved Presets:</div>
+          <div>
+            {recordValues(presets).map((preset) => (
+              <button
+                onClick={() => setActivePreset(preset)}
+                style={{
+                  color: preset.name === activePreset?.name ? "green" : "black",
+                }}
+              >
+                {preset.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {activePreset && (
+        <div>
+          <div>{`Active Preset: ${activePreset?.name}`}</div>
+          <div>
             <button
-              onClick={() => updateActivePreset(preset)}
-              style={{
-                color: preset.name === activePreset?.name ? "green" : "black",
+              onClick={() => {
+                updateActivePresetSelections();
               }}
             >
-              {preset.name}
+              Update Selected Preset
             </button>
-          ))}
+            <button
+              onClick={() => {
+                deleteActivePreset();
+              }}
+            >
+              Delete Selected Preset
+            </button>
+          </div>
         </div>
-        <button
-          onClick={() => {
-            deleteActivePreset();
-          }}
-        >
-          Delete Selected Preset
-        </button>
-      </div>
+      )}
     </div>
   );
 }

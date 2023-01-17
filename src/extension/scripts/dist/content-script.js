@@ -1114,31 +1114,31 @@
             var dispatcher = resolveDispatcher();
             return dispatcher.useRef(initialValue);
           }
-          function useEffect(create, deps) {
+          function useEffect(create2, deps) {
             var dispatcher = resolveDispatcher();
-            return dispatcher.useEffect(create, deps);
+            return dispatcher.useEffect(create2, deps);
           }
-          function useInsertionEffect(create, deps) {
+          function useInsertionEffect(create2, deps) {
             var dispatcher = resolveDispatcher();
-            return dispatcher.useInsertionEffect(create, deps);
+            return dispatcher.useInsertionEffect(create2, deps);
           }
-          function useLayoutEffect(create, deps) {
+          function useLayoutEffect(create2, deps) {
             var dispatcher = resolveDispatcher();
-            return dispatcher.useLayoutEffect(create, deps);
+            return dispatcher.useLayoutEffect(create2, deps);
           }
           function useCallback(callback, deps) {
             var dispatcher = resolveDispatcher();
             return dispatcher.useCallback(callback, deps);
           }
-          function useMemo(create, deps) {
+          function useMemo(create2, deps) {
             var dispatcher = resolveDispatcher();
-            return dispatcher.useMemo(create, deps);
+            return dispatcher.useMemo(create2, deps);
           }
-          function useImperativeHandle(ref, create, deps) {
+          function useImperativeHandle(ref, create2, deps) {
             var dispatcher = resolveDispatcher();
-            return dispatcher.useImperativeHandle(ref, create, deps);
+            return dispatcher.useImperativeHandle(ref, create2, deps);
           }
-          function useDebugValue(value, formatterFn) {
+          function useDebugValue2(value, formatterFn) {
             {
               var dispatcher = resolveDispatcher();
               return dispatcher.useDebugValue(value, formatterFn);
@@ -1894,7 +1894,7 @@
           exports.unstable_act = act;
           exports.useCallback = useCallback;
           exports.useContext = useContext;
-          exports.useDebugValue = useDebugValue;
+          exports.useDebugValue = useDebugValue2;
           exports.useDeferredValue = useDeferredValue;
           exports.useEffect = useEffect;
           exports.useId = useId;
@@ -1924,6 +1924,242 @@
         module.exports = null;
       } else {
         module.exports = require_react_development();
+      }
+    }
+  });
+
+  // node_modules/use-sync-external-store/cjs/use-sync-external-store-shim.development.js
+  var require_use_sync_external_store_shim_development = __commonJS({
+    "node_modules/use-sync-external-store/cjs/use-sync-external-store-shim.development.js"(exports) {
+      "use strict";
+      if (true) {
+        (function() {
+          "use strict";
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
+          }
+          var React = require_react();
+          var ReactSharedInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+          function error(format) {
+            {
+              {
+                for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                  args[_key2 - 1] = arguments[_key2];
+                }
+                printWarning("error", format, args);
+              }
+            }
+          }
+          function printWarning(level, format, args) {
+            {
+              var ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
+              var stack = ReactDebugCurrentFrame.getStackAddendum();
+              if (stack !== "") {
+                format += "%s";
+                args = args.concat([stack]);
+              }
+              var argsWithFormat = args.map(function(item) {
+                return String(item);
+              });
+              argsWithFormat.unshift("Warning: " + format);
+              Function.prototype.apply.call(console[level], console, argsWithFormat);
+            }
+          }
+          function is(x, y) {
+            return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
+          }
+          var objectIs = typeof Object.is === "function" ? Object.is : is;
+          var useState2 = React.useState, useEffect = React.useEffect, useLayoutEffect = React.useLayoutEffect, useDebugValue2 = React.useDebugValue;
+          var didWarnOld18Alpha = false;
+          var didWarnUncachedGetSnapshot = false;
+          function useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot) {
+            {
+              if (!didWarnOld18Alpha) {
+                if (React.startTransition !== void 0) {
+                  didWarnOld18Alpha = true;
+                  error("You are using an outdated, pre-release alpha of React 18 that does not support useSyncExternalStore. The use-sync-external-store shim will not work correctly. Upgrade to a newer pre-release.");
+                }
+              }
+            }
+            var value = getSnapshot();
+            {
+              if (!didWarnUncachedGetSnapshot) {
+                var cachedValue = getSnapshot();
+                if (!objectIs(value, cachedValue)) {
+                  error("The result of getSnapshot should be cached to avoid an infinite loop");
+                  didWarnUncachedGetSnapshot = true;
+                }
+              }
+            }
+            var _useState = useState2({
+              inst: {
+                value,
+                getSnapshot
+              }
+            }), inst = _useState[0].inst, forceUpdate = _useState[1];
+            useLayoutEffect(function() {
+              inst.value = value;
+              inst.getSnapshot = getSnapshot;
+              if (checkIfSnapshotChanged(inst)) {
+                forceUpdate({
+                  inst
+                });
+              }
+            }, [subscribe, value, getSnapshot]);
+            useEffect(function() {
+              if (checkIfSnapshotChanged(inst)) {
+                forceUpdate({
+                  inst
+                });
+              }
+              var handleStoreChange = function() {
+                if (checkIfSnapshotChanged(inst)) {
+                  forceUpdate({
+                    inst
+                  });
+                }
+              };
+              return subscribe(handleStoreChange);
+            }, [subscribe]);
+            useDebugValue2(value);
+            return value;
+          }
+          function checkIfSnapshotChanged(inst) {
+            var latestGetSnapshot = inst.getSnapshot;
+            var prevValue = inst.value;
+            try {
+              var nextValue = latestGetSnapshot();
+              return !objectIs(prevValue, nextValue);
+            } catch (error2) {
+              return true;
+            }
+          }
+          function useSyncExternalStore$1(subscribe, getSnapshot, getServerSnapshot) {
+            return getSnapshot();
+          }
+          var canUseDOM = !!(typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined");
+          var isServerEnvironment = !canUseDOM;
+          var shim = isServerEnvironment ? useSyncExternalStore$1 : useSyncExternalStore;
+          var useSyncExternalStore$2 = React.useSyncExternalStore !== void 0 ? React.useSyncExternalStore : shim;
+          exports.useSyncExternalStore = useSyncExternalStore$2;
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
+          }
+        })();
+      }
+    }
+  });
+
+  // node_modules/use-sync-external-store/shim/index.js
+  var require_shim = __commonJS({
+    "node_modules/use-sync-external-store/shim/index.js"(exports, module) {
+      "use strict";
+      if (false) {
+        module.exports = null;
+      } else {
+        module.exports = require_use_sync_external_store_shim_development();
+      }
+    }
+  });
+
+  // node_modules/use-sync-external-store/cjs/use-sync-external-store-shim/with-selector.development.js
+  var require_with_selector_development = __commonJS({
+    "node_modules/use-sync-external-store/cjs/use-sync-external-store-shim/with-selector.development.js"(exports) {
+      "use strict";
+      if (true) {
+        (function() {
+          "use strict";
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
+          }
+          var React = require_react();
+          var shim = require_shim();
+          function is(x, y) {
+            return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
+          }
+          var objectIs = typeof Object.is === "function" ? Object.is : is;
+          var useSyncExternalStore = shim.useSyncExternalStore;
+          var useRef = React.useRef, useEffect = React.useEffect, useMemo = React.useMemo, useDebugValue2 = React.useDebugValue;
+          function useSyncExternalStoreWithSelector2(subscribe, getSnapshot, getServerSnapshot, selector, isEqual) {
+            var instRef = useRef(null);
+            var inst;
+            if (instRef.current === null) {
+              inst = {
+                hasValue: false,
+                value: null
+              };
+              instRef.current = inst;
+            } else {
+              inst = instRef.current;
+            }
+            var _useMemo = useMemo(function() {
+              var hasMemo = false;
+              var memoizedSnapshot;
+              var memoizedSelection;
+              var memoizedSelector = function(nextSnapshot) {
+                if (!hasMemo) {
+                  hasMemo = true;
+                  memoizedSnapshot = nextSnapshot;
+                  var _nextSelection = selector(nextSnapshot);
+                  if (isEqual !== void 0) {
+                    if (inst.hasValue) {
+                      var currentSelection = inst.value;
+                      if (isEqual(currentSelection, _nextSelection)) {
+                        memoizedSelection = currentSelection;
+                        return currentSelection;
+                      }
+                    }
+                  }
+                  memoizedSelection = _nextSelection;
+                  return _nextSelection;
+                }
+                var prevSnapshot = memoizedSnapshot;
+                var prevSelection = memoizedSelection;
+                if (objectIs(prevSnapshot, nextSnapshot)) {
+                  return prevSelection;
+                }
+                var nextSelection = selector(nextSnapshot);
+                if (isEqual !== void 0 && isEqual(prevSelection, nextSelection)) {
+                  return prevSelection;
+                }
+                memoizedSnapshot = nextSnapshot;
+                memoizedSelection = nextSelection;
+                return nextSelection;
+              };
+              var maybeGetServerSnapshot = getServerSnapshot === void 0 ? null : getServerSnapshot;
+              var getSnapshotWithSelector = function() {
+                return memoizedSelector(getSnapshot());
+              };
+              var getServerSnapshotWithSelector = maybeGetServerSnapshot === null ? void 0 : function() {
+                return memoizedSelector(maybeGetServerSnapshot());
+              };
+              return [getSnapshotWithSelector, getServerSnapshotWithSelector];
+            }, [getSnapshot, getServerSnapshot, selector, isEqual]), getSelection = _useMemo[0], getServerSelection = _useMemo[1];
+            var value = useSyncExternalStore(subscribe, getSelection, getServerSelection);
+            useEffect(function() {
+              inst.hasValue = true;
+              inst.value = value;
+            }, [value]);
+            useDebugValue2(value);
+            return value;
+          }
+          exports.useSyncExternalStoreWithSelector = useSyncExternalStoreWithSelector2;
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
+          }
+        })();
+      }
+    }
+  });
+
+  // node_modules/use-sync-external-store/shim/with-selector.js
+  var require_with_selector = __commonJS({
+    "node_modules/use-sync-external-store/shim/with-selector.js"(exports, module) {
+      "use strict";
+      if (false) {
+        module.exports = null;
+      } else {
+        module.exports = require_with_selector_development();
       }
     }
   });
@@ -15459,10 +15695,10 @@
           function rerenderState(initialState) {
             return rerenderReducer(basicStateReducer);
           }
-          function pushEffect(tag, create, destroy, deps) {
+          function pushEffect(tag, create2, destroy, deps) {
             var effect = {
               tag,
-              create,
+              create: create2,
               destroy,
               deps,
               // Circular
@@ -15500,13 +15736,13 @@
             var hook = updateWorkInProgressHook();
             return hook.memoizedState;
           }
-          function mountEffectImpl(fiberFlags, hookFlags, create, deps) {
+          function mountEffectImpl(fiberFlags, hookFlags, create2, deps) {
             var hook = mountWorkInProgressHook();
             var nextDeps = deps === void 0 ? null : deps;
             currentlyRenderingFiber$1.flags |= fiberFlags;
-            hook.memoizedState = pushEffect(HasEffect | hookFlags, create, void 0, nextDeps);
+            hook.memoizedState = pushEffect(HasEffect | hookFlags, create2, void 0, nextDeps);
           }
-          function updateEffectImpl(fiberFlags, hookFlags, create, deps) {
+          function updateEffectImpl(fiberFlags, hookFlags, create2, deps) {
             var hook = updateWorkInProgressHook();
             var nextDeps = deps === void 0 ? null : deps;
             var destroy = void 0;
@@ -15516,31 +15752,31 @@
               if (nextDeps !== null) {
                 var prevDeps = prevEffect.deps;
                 if (areHookInputsEqual(nextDeps, prevDeps)) {
-                  hook.memoizedState = pushEffect(hookFlags, create, destroy, nextDeps);
+                  hook.memoizedState = pushEffect(hookFlags, create2, destroy, nextDeps);
                   return;
                 }
               }
             }
             currentlyRenderingFiber$1.flags |= fiberFlags;
-            hook.memoizedState = pushEffect(HasEffect | hookFlags, create, destroy, nextDeps);
+            hook.memoizedState = pushEffect(HasEffect | hookFlags, create2, destroy, nextDeps);
           }
-          function mountEffect(create, deps) {
+          function mountEffect(create2, deps) {
             if ((currentlyRenderingFiber$1.mode & StrictEffectsMode) !== NoMode) {
-              return mountEffectImpl(MountPassiveDev | Passive | PassiveStatic, Passive$1, create, deps);
+              return mountEffectImpl(MountPassiveDev | Passive | PassiveStatic, Passive$1, create2, deps);
             } else {
-              return mountEffectImpl(Passive | PassiveStatic, Passive$1, create, deps);
+              return mountEffectImpl(Passive | PassiveStatic, Passive$1, create2, deps);
             }
           }
-          function updateEffect(create, deps) {
-            return updateEffectImpl(Passive, Passive$1, create, deps);
+          function updateEffect(create2, deps) {
+            return updateEffectImpl(Passive, Passive$1, create2, deps);
           }
-          function mountInsertionEffect(create, deps) {
-            return mountEffectImpl(Update, Insertion, create, deps);
+          function mountInsertionEffect(create2, deps) {
+            return mountEffectImpl(Update, Insertion, create2, deps);
           }
-          function updateInsertionEffect(create, deps) {
-            return updateEffectImpl(Update, Insertion, create, deps);
+          function updateInsertionEffect(create2, deps) {
+            return updateEffectImpl(Update, Insertion, create2, deps);
           }
-          function mountLayoutEffect(create, deps) {
+          function mountLayoutEffect(create2, deps) {
             var fiberFlags = Update;
             {
               fiberFlags |= LayoutStatic;
@@ -15548,15 +15784,15 @@
             if ((currentlyRenderingFiber$1.mode & StrictEffectsMode) !== NoMode) {
               fiberFlags |= MountLayoutDev;
             }
-            return mountEffectImpl(fiberFlags, Layout, create, deps);
+            return mountEffectImpl(fiberFlags, Layout, create2, deps);
           }
-          function updateLayoutEffect(create, deps) {
-            return updateEffectImpl(Update, Layout, create, deps);
+          function updateLayoutEffect(create2, deps) {
+            return updateEffectImpl(Update, Layout, create2, deps);
           }
-          function imperativeHandleEffect(create, ref) {
+          function imperativeHandleEffect(create2, ref) {
             if (typeof ref === "function") {
               var refCallback = ref;
-              var _inst = create();
+              var _inst = create2();
               refCallback(_inst);
               return function() {
                 refCallback(null);
@@ -15568,17 +15804,17 @@
                   error("Expected useImperativeHandle() first argument to either be a ref callback or React.createRef() object. Instead received: %s.", "an object with keys {" + Object.keys(refObject).join(", ") + "}");
                 }
               }
-              var _inst2 = create();
+              var _inst2 = create2();
               refObject.current = _inst2;
               return function() {
                 refObject.current = null;
               };
             }
           }
-          function mountImperativeHandle(ref, create, deps) {
+          function mountImperativeHandle(ref, create2, deps) {
             {
-              if (typeof create !== "function") {
-                error("Expected useImperativeHandle() second argument to be a function that creates a handle. Instead received: %s.", create !== null ? typeof create : "null");
+              if (typeof create2 !== "function") {
+                error("Expected useImperativeHandle() second argument to be a function that creates a handle. Instead received: %s.", create2 !== null ? typeof create2 : "null");
               }
             }
             var effectDeps = deps !== null && deps !== void 0 ? deps.concat([ref]) : null;
@@ -15589,16 +15825,16 @@
             if ((currentlyRenderingFiber$1.mode & StrictEffectsMode) !== NoMode) {
               fiberFlags |= MountLayoutDev;
             }
-            return mountEffectImpl(fiberFlags, Layout, imperativeHandleEffect.bind(null, create, ref), effectDeps);
+            return mountEffectImpl(fiberFlags, Layout, imperativeHandleEffect.bind(null, create2, ref), effectDeps);
           }
-          function updateImperativeHandle(ref, create, deps) {
+          function updateImperativeHandle(ref, create2, deps) {
             {
-              if (typeof create !== "function") {
-                error("Expected useImperativeHandle() second argument to be a function that creates a handle. Instead received: %s.", create !== null ? typeof create : "null");
+              if (typeof create2 !== "function") {
+                error("Expected useImperativeHandle() second argument to be a function that creates a handle. Instead received: %s.", create2 !== null ? typeof create2 : "null");
               }
             }
             var effectDeps = deps !== null && deps !== void 0 ? deps.concat([ref]) : null;
-            return updateEffectImpl(Update, Layout, imperativeHandleEffect.bind(null, create, ref), effectDeps);
+            return updateEffectImpl(Update, Layout, imperativeHandleEffect.bind(null, create2, ref), effectDeps);
           }
           function mountDebugValue(value, formatterFn) {
           }
@@ -15920,38 +16156,38 @@
                 mountHookTypesDev();
                 return readContext(context);
               },
-              useEffect: function(create, deps) {
+              useEffect: function(create2, deps) {
                 currentHookNameInDev = "useEffect";
                 mountHookTypesDev();
                 checkDepsAreArrayDev(deps);
-                return mountEffect(create, deps);
+                return mountEffect(create2, deps);
               },
-              useImperativeHandle: function(ref, create, deps) {
+              useImperativeHandle: function(ref, create2, deps) {
                 currentHookNameInDev = "useImperativeHandle";
                 mountHookTypesDev();
                 checkDepsAreArrayDev(deps);
-                return mountImperativeHandle(ref, create, deps);
+                return mountImperativeHandle(ref, create2, deps);
               },
-              useInsertionEffect: function(create, deps) {
+              useInsertionEffect: function(create2, deps) {
                 currentHookNameInDev = "useInsertionEffect";
                 mountHookTypesDev();
                 checkDepsAreArrayDev(deps);
-                return mountInsertionEffect(create, deps);
+                return mountInsertionEffect(create2, deps);
               },
-              useLayoutEffect: function(create, deps) {
+              useLayoutEffect: function(create2, deps) {
                 currentHookNameInDev = "useLayoutEffect";
                 mountHookTypesDev();
                 checkDepsAreArrayDev(deps);
-                return mountLayoutEffect(create, deps);
+                return mountLayoutEffect(create2, deps);
               },
-              useMemo: function(create, deps) {
+              useMemo: function(create2, deps) {
                 currentHookNameInDev = "useMemo";
                 mountHookTypesDev();
                 checkDepsAreArrayDev(deps);
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnMountInDEV;
                 try {
-                  return mountMemo(create, deps);
+                  return mountMemo(create2, deps);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -16029,33 +16265,33 @@
                 updateHookTypesDev();
                 return readContext(context);
               },
-              useEffect: function(create, deps) {
+              useEffect: function(create2, deps) {
                 currentHookNameInDev = "useEffect";
                 updateHookTypesDev();
-                return mountEffect(create, deps);
+                return mountEffect(create2, deps);
               },
-              useImperativeHandle: function(ref, create, deps) {
+              useImperativeHandle: function(ref, create2, deps) {
                 currentHookNameInDev = "useImperativeHandle";
                 updateHookTypesDev();
-                return mountImperativeHandle(ref, create, deps);
+                return mountImperativeHandle(ref, create2, deps);
               },
-              useInsertionEffect: function(create, deps) {
+              useInsertionEffect: function(create2, deps) {
                 currentHookNameInDev = "useInsertionEffect";
                 updateHookTypesDev();
-                return mountInsertionEffect(create, deps);
+                return mountInsertionEffect(create2, deps);
               },
-              useLayoutEffect: function(create, deps) {
+              useLayoutEffect: function(create2, deps) {
                 currentHookNameInDev = "useLayoutEffect";
                 updateHookTypesDev();
-                return mountLayoutEffect(create, deps);
+                return mountLayoutEffect(create2, deps);
               },
-              useMemo: function(create, deps) {
+              useMemo: function(create2, deps) {
                 currentHookNameInDev = "useMemo";
                 updateHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnMountInDEV;
                 try {
-                  return mountMemo(create, deps);
+                  return mountMemo(create2, deps);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -16133,33 +16369,33 @@
                 updateHookTypesDev();
                 return readContext(context);
               },
-              useEffect: function(create, deps) {
+              useEffect: function(create2, deps) {
                 currentHookNameInDev = "useEffect";
                 updateHookTypesDev();
-                return updateEffect(create, deps);
+                return updateEffect(create2, deps);
               },
-              useImperativeHandle: function(ref, create, deps) {
+              useImperativeHandle: function(ref, create2, deps) {
                 currentHookNameInDev = "useImperativeHandle";
                 updateHookTypesDev();
-                return updateImperativeHandle(ref, create, deps);
+                return updateImperativeHandle(ref, create2, deps);
               },
-              useInsertionEffect: function(create, deps) {
+              useInsertionEffect: function(create2, deps) {
                 currentHookNameInDev = "useInsertionEffect";
                 updateHookTypesDev();
-                return updateInsertionEffect(create, deps);
+                return updateInsertionEffect(create2, deps);
               },
-              useLayoutEffect: function(create, deps) {
+              useLayoutEffect: function(create2, deps) {
                 currentHookNameInDev = "useLayoutEffect";
                 updateHookTypesDev();
-                return updateLayoutEffect(create, deps);
+                return updateLayoutEffect(create2, deps);
               },
-              useMemo: function(create, deps) {
+              useMemo: function(create2, deps) {
                 currentHookNameInDev = "useMemo";
                 updateHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
                 try {
-                  return updateMemo(create, deps);
+                  return updateMemo(create2, deps);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -16237,33 +16473,33 @@
                 updateHookTypesDev();
                 return readContext(context);
               },
-              useEffect: function(create, deps) {
+              useEffect: function(create2, deps) {
                 currentHookNameInDev = "useEffect";
                 updateHookTypesDev();
-                return updateEffect(create, deps);
+                return updateEffect(create2, deps);
               },
-              useImperativeHandle: function(ref, create, deps) {
+              useImperativeHandle: function(ref, create2, deps) {
                 currentHookNameInDev = "useImperativeHandle";
                 updateHookTypesDev();
-                return updateImperativeHandle(ref, create, deps);
+                return updateImperativeHandle(ref, create2, deps);
               },
-              useInsertionEffect: function(create, deps) {
+              useInsertionEffect: function(create2, deps) {
                 currentHookNameInDev = "useInsertionEffect";
                 updateHookTypesDev();
-                return updateInsertionEffect(create, deps);
+                return updateInsertionEffect(create2, deps);
               },
-              useLayoutEffect: function(create, deps) {
+              useLayoutEffect: function(create2, deps) {
                 currentHookNameInDev = "useLayoutEffect";
                 updateHookTypesDev();
-                return updateLayoutEffect(create, deps);
+                return updateLayoutEffect(create2, deps);
               },
-              useMemo: function(create, deps) {
+              useMemo: function(create2, deps) {
                 currentHookNameInDev = "useMemo";
                 updateHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnRerenderInDEV;
                 try {
-                  return updateMemo(create, deps);
+                  return updateMemo(create2, deps);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -16344,38 +16580,38 @@
                 mountHookTypesDev();
                 return readContext(context);
               },
-              useEffect: function(create, deps) {
+              useEffect: function(create2, deps) {
                 currentHookNameInDev = "useEffect";
                 warnInvalidHookAccess();
                 mountHookTypesDev();
-                return mountEffect(create, deps);
+                return mountEffect(create2, deps);
               },
-              useImperativeHandle: function(ref, create, deps) {
+              useImperativeHandle: function(ref, create2, deps) {
                 currentHookNameInDev = "useImperativeHandle";
                 warnInvalidHookAccess();
                 mountHookTypesDev();
-                return mountImperativeHandle(ref, create, deps);
+                return mountImperativeHandle(ref, create2, deps);
               },
-              useInsertionEffect: function(create, deps) {
+              useInsertionEffect: function(create2, deps) {
                 currentHookNameInDev = "useInsertionEffect";
                 warnInvalidHookAccess();
                 mountHookTypesDev();
-                return mountInsertionEffect(create, deps);
+                return mountInsertionEffect(create2, deps);
               },
-              useLayoutEffect: function(create, deps) {
+              useLayoutEffect: function(create2, deps) {
                 currentHookNameInDev = "useLayoutEffect";
                 warnInvalidHookAccess();
                 mountHookTypesDev();
-                return mountLayoutEffect(create, deps);
+                return mountLayoutEffect(create2, deps);
               },
-              useMemo: function(create, deps) {
+              useMemo: function(create2, deps) {
                 currentHookNameInDev = "useMemo";
                 warnInvalidHookAccess();
                 mountHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnMountInDEV;
                 try {
-                  return mountMemo(create, deps);
+                  return mountMemo(create2, deps);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -16465,38 +16701,38 @@
                 updateHookTypesDev();
                 return readContext(context);
               },
-              useEffect: function(create, deps) {
+              useEffect: function(create2, deps) {
                 currentHookNameInDev = "useEffect";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
-                return updateEffect(create, deps);
+                return updateEffect(create2, deps);
               },
-              useImperativeHandle: function(ref, create, deps) {
+              useImperativeHandle: function(ref, create2, deps) {
                 currentHookNameInDev = "useImperativeHandle";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
-                return updateImperativeHandle(ref, create, deps);
+                return updateImperativeHandle(ref, create2, deps);
               },
-              useInsertionEffect: function(create, deps) {
+              useInsertionEffect: function(create2, deps) {
                 currentHookNameInDev = "useInsertionEffect";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
-                return updateInsertionEffect(create, deps);
+                return updateInsertionEffect(create2, deps);
               },
-              useLayoutEffect: function(create, deps) {
+              useLayoutEffect: function(create2, deps) {
                 currentHookNameInDev = "useLayoutEffect";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
-                return updateLayoutEffect(create, deps);
+                return updateLayoutEffect(create2, deps);
               },
-              useMemo: function(create, deps) {
+              useMemo: function(create2, deps) {
                 currentHookNameInDev = "useMemo";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
                 try {
-                  return updateMemo(create, deps);
+                  return updateMemo(create2, deps);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -16586,38 +16822,38 @@
                 updateHookTypesDev();
                 return readContext(context);
               },
-              useEffect: function(create, deps) {
+              useEffect: function(create2, deps) {
                 currentHookNameInDev = "useEffect";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
-                return updateEffect(create, deps);
+                return updateEffect(create2, deps);
               },
-              useImperativeHandle: function(ref, create, deps) {
+              useImperativeHandle: function(ref, create2, deps) {
                 currentHookNameInDev = "useImperativeHandle";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
-                return updateImperativeHandle(ref, create, deps);
+                return updateImperativeHandle(ref, create2, deps);
               },
-              useInsertionEffect: function(create, deps) {
+              useInsertionEffect: function(create2, deps) {
                 currentHookNameInDev = "useInsertionEffect";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
-                return updateInsertionEffect(create, deps);
+                return updateInsertionEffect(create2, deps);
               },
-              useLayoutEffect: function(create, deps) {
+              useLayoutEffect: function(create2, deps) {
                 currentHookNameInDev = "useLayoutEffect";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
-                return updateLayoutEffect(create, deps);
+                return updateLayoutEffect(create2, deps);
               },
-              useMemo: function(create, deps) {
+              useMemo: function(create2, deps) {
                 currentHookNameInDev = "useMemo";
                 warnInvalidHookAccess();
                 updateHookTypesDev();
                 var prevDispatcher = ReactCurrentDispatcher$1.current;
                 ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
                 try {
-                  return updateMemo(create, deps);
+                  return updateMemo(create2, deps);
                 } finally {
                   ReactCurrentDispatcher$1.current = prevDispatcher;
                 }
@@ -19708,13 +19944,13 @@
                       markComponentLayoutEffectMountStarted(finishedWork);
                     }
                   }
-                  var create = effect.create;
+                  var create2 = effect.create;
                   {
                     if ((flags & Insertion) !== NoFlags$1) {
                       setIsRunningInsertionEffect(true);
                     }
                   }
-                  effect.destroy = create();
+                  effect.destroy = create2();
                   {
                     if ((flags & Insertion) !== NoFlags$1) {
                       setIsRunningInsertionEffect(false);
@@ -21814,7 +22050,7 @@
             }
             return rootWorkInProgress;
           }
-          function handleError(root2, thrownValue) {
+          function handleError2(root2, thrownValue) {
             do {
               var erroredWork = workInProgress;
               try {
@@ -21925,7 +22161,7 @@
                 workLoopSync();
                 break;
               } catch (thrownValue) {
-                handleError(root2, thrownValue);
+                handleError2(root2, thrownValue);
               }
             } while (true);
             resetContextDependencies();
@@ -21973,7 +22209,7 @@
                 workLoopConcurrent();
                 break;
               } catch (thrownValue) {
-                handleError(root2, thrownValue);
+                handleError2(root2, thrownValue);
               }
             } while (true);
             resetContextDependencies();
@@ -24415,23 +24651,7 @@
     }
   });
 
-  // src/core/storage/storage.ts
-  var storage = {
-    save(key, data) {
-      localStorage.setItem(`mapgenie-tools:${key}`, JSON.stringify(data));
-    },
-    load(key) {
-      const data = localStorage.getItem(`mapgenie-tools:${key}`);
-      if (!data)
-        return void 0;
-      return JSON.parse(data);
-    },
-    remove(key) {
-      localStorage.removeItem(`mapgenie-tools:${key}`);
-    }
-  };
-
-  // src/features/presets/utility/map-genie.ts
+  // src/features/presets/map-genie/map-genie.ts
   function getActiveSelections() {
     const selectionElements = [...document.querySelectorAll(".category-visible")];
     const selections = selectionElements.map((node) => {
@@ -24457,56 +24677,195 @@
   }
 
   // src/features/presets/components/presets.tsx
-  var import_react = __toESM(require_react());
+  var import_react2 = __toESM(require_react());
 
-  // src/core/utility/record.ts
+  // node_modules/zustand/esm/vanilla.mjs
+  var import_meta = {};
+  var createStoreImpl = (createState) => {
+    let state;
+    const listeners = /* @__PURE__ */ new Set();
+    const setState = (partial, replace) => {
+      const nextState = typeof partial === "function" ? partial(state) : partial;
+      if (!Object.is(nextState, state)) {
+        const previousState = state;
+        state = (replace != null ? replace : typeof nextState !== "object") ? nextState : Object.assign({}, state, nextState);
+        listeners.forEach((listener) => listener(state, previousState));
+      }
+    };
+    const getState = () => state;
+    const subscribe = (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    };
+    const destroy = () => {
+      if ((import_meta.env && import_meta.env.MODE) !== "production") {
+        console.warn(
+          "[DEPRECATED] The destroy method will be unsupported in the future version. You should use unsubscribe function returned by subscribe. Everything will be garbage collected if store is garbage collected."
+        );
+      }
+      listeners.clear();
+    };
+    const api = { setState, getState, subscribe, destroy };
+    state = createState(setState, getState, api);
+    return api;
+  };
+  var createStore = (createState) => createState ? createStoreImpl(createState) : createStoreImpl;
+
+  // node_modules/zustand/esm/index.mjs
+  var import_react = __toESM(require_react(), 1);
+  var import_with_selector = __toESM(require_with_selector(), 1);
+  var import_meta2 = {};
+  var { useSyncExternalStoreWithSelector } = import_with_selector.default;
+  function useStore(api, selector = api.getState, equalityFn) {
+    const slice = useSyncExternalStoreWithSelector(
+      api.subscribe,
+      api.getState,
+      api.getServerState || api.getState,
+      selector,
+      equalityFn
+    );
+    (0, import_react.useDebugValue)(slice);
+    return slice;
+  }
+  var createImpl = (createState) => {
+    if ((import_meta2.env && import_meta2.env.MODE) !== "production" && typeof createState !== "function") {
+      console.warn(
+        '[DEPRECATED] Passing a vanilla store will be unsupported in the future version. Please use `import { useStore } from "zustand"` to use the vanilla store in React.'
+      );
+    }
+    const api = typeof createState === "function" ? createStore(createState) : createState;
+    const useBoundStore = (selector, equalityFn) => useStore(api, selector, equalityFn);
+    Object.assign(useBoundStore, api);
+    return useBoundStore;
+  };
+  var create = (createState) => createState ? createImpl(createState) : createImpl;
+
+  // src/features/common/errors/handle-error.ts
+  function handleError(error) {
+    const { message, isOperational } = error;
+    if (isOperational) {
+      window.alert(message);
+    } else {
+      console.error(message);
+    }
+  }
+
+  // src/features/common/errors/map-genie-tools-error.ts
+  var MapGenieToolsError = class extends Error {
+    constructor(message, isOperational) {
+      super(message);
+      this.isOperational = isOperational;
+      handleError(this);
+    }
+  };
+
+  // src/features/common/storage/storage.ts
+  var storage = {
+    save(key, data) {
+      localStorage.setItem(`mapgenie-tools:${key}`, JSON.stringify(data));
+    },
+    load(key) {
+      const data = localStorage.getItem(`mapgenie-tools:${key}`);
+      if (!data)
+        return void 0;
+      return JSON.parse(data);
+    },
+    remove(key) {
+      localStorage.removeItem(`mapgenie-tools:${key}`);
+    }
+  };
+
+  // src/features/presets/storage/presets-storage.ts
+  function loadPresets() {
+    return storage.load("presets") || {};
+  }
+  function persistState(state) {
+    const { activePreset, presets: presets2 } = state;
+    storage.save("presets", presets2);
+    if (activePreset) {
+      storage.save("active-preset", activePreset);
+    } else {
+      storage.remove("active-preset");
+    }
+  }
+
+  // src/features/presets/store/presets-store.ts
+  var usePresetsStore = create()((set, get) => ({
+    presets: loadPresets(),
+    activePreset: void 0,
+    // Mutators
+    setPresets(updatedPresets) {
+      set({ presets: updatedPresets });
+      persistState(get());
+    },
+    setActivePreset: (preset) => {
+      set({ activePreset: preset });
+      persistState(get());
+      if (preset) {
+        activatePresetSelections(preset);
+      }
+    },
+    // Actions
+    addPreset: (preset) => {
+      console.log("ADDING PRESET");
+      const { presets: presets2, setActivePreset, setPresets } = get();
+      if (presets2[preset.name]) {
+        throw new MapGenieToolsError(
+          "A Preset with that name already exists",
+          true
+        );
+      }
+      setPresets(__spreadProps(__spreadValues({}, presets2), { [preset.name]: preset }));
+      setActivePreset(preset);
+    },
+    updatePreset(preset, newSelections) {
+      const { presets: presets2, setPresets } = get();
+      setPresets(__spreadProps(__spreadValues({}, presets2), {
+        [preset.name]: { name: preset.name, selections: newSelections }
+      }));
+    },
+    deletePreset: (preset) => {
+      const { presets: presets2, activePreset, setPresets, setActivePreset } = get();
+      delete presets2[preset.name];
+      setPresets(presets2);
+      if (preset == activePreset) {
+        setActivePreset(void 0);
+      }
+    }
+  }));
+
+  // src/features/common/utility/record.ts
   function recordValues(record) {
     return Object.values(record);
   }
 
   // src/features/presets/components/presets.tsx
   var import_jsx_runtime = __toESM(require_jsx_runtime());
-  function getUserPresets() {
-    return storage.load("presets") || {};
-  }
-  function updateUserPresets(presets2) {
-    storage.save("presets", presets2);
-  }
   function PresetsManager() {
-    const [presetName, setPresetName] = (0, import_react.useState)("");
-    const [presets2, setPresets] = (0, import_react.useState)(getUserPresets());
-    const [activePreset, setActivePreset] = (0, import_react.useState)(
-      storage.load("active-preset")
-    );
+    const [presetName, setPresetName] = (0, import_react2.useState)("");
+    const {
+      activePreset,
+      presets: presets2,
+      setActivePreset,
+      addPreset,
+      updatePreset,
+      deletePreset
+    } = usePresetsStore();
     function savePreset(name = "default") {
       const newPreset = { name, selections: getActiveSelections() };
-      const updatedPresets = __spreadProps(__spreadValues({}, presets2), {
-        [presetName]: newPreset
-      });
-      setPresets(updatedPresets);
-      updateUserPresets(updatedPresets);
-      setActivePreset(newPreset);
+      addPreset(newPreset);
     }
-    function updateActivePreset(preset) {
-      setActivePreset(preset);
-      storage.save("active-preset", preset);
-      setPresetName((preset == null ? void 0 : preset.name) || "");
-      if (preset) {
-        storage.save("active-preset", preset);
-        activatePresetSelections(preset);
-      } else {
-        storage.remove("active-preset");
+    function updateActivePresetSelections() {
+      if (!activePreset) {
+        return;
       }
+      updatePreset(activePreset, getActiveSelections());
     }
     function deleteActivePreset() {
       if (!activePreset) {
         return;
       }
-      const updatedPresets = __spreadValues({}, presets2);
-      delete updatedPresets[activePreset.name];
-      setPresets(updatedPresets);
-      updateUserPresets(updatedPresets);
-      updateActivePreset(void 0);
+      deletePreset(activePreset);
     }
     return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Presets" }),
@@ -24522,32 +24881,46 @@
         ),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => savePreset(presetName), children: "Save Selections" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+      recordValues(presets2).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: "Saved Presets:" }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: recordValues(presets2).map((preset) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
           "button",
           {
-            onClick: () => updateActivePreset(preset),
+            onClick: () => setActivePreset(preset),
             style: {
               color: preset.name === (activePreset == null ? void 0 : activePreset.name) ? "green" : "black"
             },
             children: preset.name
           }
-        )) }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-          "button",
-          {
-            onClick: () => {
-              deleteActivePreset();
-            },
-            children: "Delete Selected Preset"
-          }
-        )
+        )) })
+      ] }),
+      activePreset && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { children: `Active Preset: ${activePreset == null ? void 0 : activePreset.name}` }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+            "button",
+            {
+              onClick: () => {
+                updateActivePresetSelections();
+              },
+              children: "Update Selected Preset"
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+            "button",
+            {
+              onClick: () => {
+                deleteActivePreset();
+              },
+              children: "Delete Selected Preset"
+            }
+          )
+        ] })
       ] })
     ] });
   }
 
-  // src/chrome/scripts/content-script.tsx
+  // src/extension/scripts/content-script.tsx
   var import_client = __toESM(require_client());
   var import_jsx_runtime2 = __toESM(require_jsx_runtime());
   var presets = createReactApp(/* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PresetsManager, {}));
@@ -24575,6 +24948,28 @@ react/cjs/react.development.js:
   (**
    * @license React
    * react.development.js
+   *
+   * Copyright (c) Facebook, Inc. and its affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   *)
+
+use-sync-external-store/cjs/use-sync-external-store-shim.development.js:
+  (**
+   * @license React
+   * use-sync-external-store-shim.development.js
+   *
+   * Copyright (c) Facebook, Inc. and its affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   *)
+
+use-sync-external-store/cjs/use-sync-external-store-shim/with-selector.development.js:
+  (**
+   * @license React
+   * use-sync-external-store-shim/with-selector.development.js
    *
    * Copyright (c) Facebook, Inc. and its affiliates.
    *
