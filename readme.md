@@ -7,3 +7,5 @@ Current Features
 # Installing
 1. Download the latest release from this repo.
 2. Add to your browser as an unpacked extension
+
+
