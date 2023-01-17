@@ -1,13 +1,12 @@
-import {buildSync} from "esbuild"
-import {copyFileSync} from "fs"
-import glob from "tiny-glob"
+import { buildSync } from "esbuild";
+import glob from "tiny-glob";
 
-buildSync({
-    entryPoints:["./src/extension/scripts/content-script.tsx"],
-    bundle:true,
-    outdir: 'src/extension/scripts/dist',
-    loader: {'.js': 'jsx'}
-})
-
-
-
+glob("./src/extension/**/*", { filesOnly: true }).then((files) => {
+  console.log(files);
+  buildSync({
+    entryPoints: files,
+    bundle: true,
+    outdir: "dist",
+    loader: { ".js": "jsx", ".png": "copy", ".json": "copy" },
+  });
+});

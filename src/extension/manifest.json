@@ -9,7 +9,7 @@
   "content_scripts": [
     {
       "js": [
-        "scripts/dist/content-script.js"
+        "scripts/content-script.js"
       ],
       "matches": [
         "https://mapgenie.io/*"

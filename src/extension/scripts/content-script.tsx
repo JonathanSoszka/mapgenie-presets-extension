@@ -1,5 +1,5 @@
-import { PresetsManager } from "../../features/presets/components/presets";
 import { createRoot } from "react-dom/client";
+import { PresetsManager } from "../../plugins/presets/components/presets";
 
 
 const presets = createReactApp(<PresetsManager/>)

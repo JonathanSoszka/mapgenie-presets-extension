@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { MapGenieToolsError } from "../../common/errors/map-genie-tools-error";
+import { MapGenieToolsError } from "../../../common/errors/map-genie-tools-error";
+
 import { activatePresetSelections } from "../map-genie/map-genie";
 import { loadPresets, persistState } from "../storage/presets-storage";
 

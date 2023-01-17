@@ -1,5 +1,4 @@
-import { storage } from "../../common/storage/storage";
-import { activatePresetSelections } from "../map-genie/map-genie";
+import { storage } from "../../../common/storage/storage";
 import { Preset, PresetsStore } from "../store/presets-store";
 
 
