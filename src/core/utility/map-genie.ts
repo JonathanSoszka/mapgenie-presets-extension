@@ -1,3 +1,4 @@
+import { Preset } from "../../features/presets/types";
 
 export function getActiveSelections() {
   const selectionElements = [...document.querySelectorAll(".category-visible")];
@@ -8,7 +9,7 @@ export function getActiveSelections() {
   return selections;
 }
 
-export function activatePresetSelections(preset: Preset) {
+export  function activatePresetSelections(preset: Preset) {
   const hideAllButton = document?.querySelector(
     "#hide-all"
   ) as HTMLButtonElement;
